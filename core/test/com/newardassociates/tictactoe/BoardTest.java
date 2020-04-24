@@ -69,4 +69,5 @@ public class BoardTest {
     // TODO: diagonal wins
     // TODO: vertical wins
     // TODO: draw
+    // TODO: game reset
 }
