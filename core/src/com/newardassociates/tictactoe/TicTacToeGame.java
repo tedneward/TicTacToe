@@ -30,9 +30,16 @@ class Board {
 	 * Construct a 3x3 game board
 	 */
 	public Board() {
-		board = new int[3][];
-		for (int i=0; i<3; i++)
-			board[i] = new int[3];
+		reset(3);
+	}
+
+	/**
+	 * Clear out a Board and start from scratch
+	 */
+	public void reset(int size) {
+		board = new int[size][];
+		for (int i=0; i<size; i++)
+			board[i] = new int[size];
 	}
 
 	/**
