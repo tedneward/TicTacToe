@@ -6,6 +6,24 @@ import com.badlogic.gdx.graphics.GL20;
 import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 
+/**
+ * Basic representation of a TTT game board.
+ * 
+ * Later, add flexible sizing (4x4, 5x5, etc).
+ */
+class Board {
+	private int[][] board;
+
+	/**
+	 * Construct a 3x3 game board
+	 */
+	public Board() {
+		board = new int[3][];
+		for (int i=0; i<3; i++)
+			board[i] = new int[3];
+	}
+}
+
 public class TicTacToeGame extends ApplicationAdapter {
 	SpriteBatch batch;
 	Texture img;
