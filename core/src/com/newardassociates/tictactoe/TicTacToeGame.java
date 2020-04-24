@@ -88,10 +88,10 @@ class Board {
 		for (int p=1; p<=2; p++)
 		{
 			// check horizontal rows
-			for (int y = 0; y < 2; y++)
+			for (int y = 0; y < 3; y++)
 			{
 				boolean complete = true;
-				for (int x = 0; x < 2; x++) {
+				for (int x = 0; x < 3; x++) {
 					if (get(x, y) != p) {
 						complete = false;
 						break;
@@ -102,10 +102,10 @@ class Board {
 			}
 
 			// check vertical
-			for (int x = 0; x < 2; x++)
+			for (int x = 0; x < 3; x++)
 			{
 				boolean complete = true;
-				for (int y = 0; y < 2; y++) {
+				for (int y = 0; y < 3; y++) {
 					if (get(x, y) != p) {
 						complete = false;
 						break;
@@ -118,7 +118,7 @@ class Board {
 			// check diagonals
 			{
 				boolean complete = true;
-				for (int d=0; d < 2; d++) {
+				for (int d=0; d < 3; d++) {
 					if (get(d, d) != p) {
 						complete = false;
 						break;
@@ -128,7 +128,7 @@ class Board {
 					return p;
 
 				complete = true;
-				for (int d=0; d < 2; d++) {
+				for (int d=0; d < 3; d++) {
 					if (get(d, (2 - d)) != p) {
 						complete = false;
 						break;
@@ -142,8 +142,8 @@ class Board {
 		// check if all squares are filled; all squares filled
 		// and no winner (checked above) means we have a draw
 		boolean filled = true;
-		for (int x=0; x<2; x++)
-			for (int y=0; y<2; y++)
+		for (int x=0; x<3; x++)
+			for (int y=0; y<3; y++)
 				if (get(x,y) == 0)
 					filled = false;
 		if (filled)
@@ -152,6 +152,13 @@ class Board {
 		// we're still going, then
 		return 0;
 	}
+
+	@Override
+	public String toString() {
+		return "BOARD: [ [" + get(0,0) + "]  [" + get(1, 0) + "]  [" + get(2, 0) + "]\n" +
+			"         [" + get(0,1) + "]  [" + get(1, 1) + "]  [" + get(2, 1) + "]\n" +
+			"         [" + get(0,2) + "]  [" + get(1, 2) + "]  [" + get(2, 2) + "]  ]";
+	} 
 }
 
 class BoardUI {
@@ -186,13 +193,43 @@ class BoardUI {
 		boardSprite.draw(batch);
 
 		// For each square in the board, draw the appropriate Texture
+		for (int x = 0; x < 3; x++) {
 
+		}
+	}	
+
+	public void resolveClick(int x, int y) {
+		int col = getColumnFromXCoord(x);
+		int row = getRowFromYCoord(y);
+
+		// Check if this is already taken
+		if (board.get(col, row) == 0) {
+			System.out.println("Player " + board.currentPlayer() 
+				+ " moves to " + col + " " + row);
+
+			board.play(col, row);
+
+			System.out.println(board.toString());
+		}
+	}
+	private int getColumnFromXCoord(int x) {
+		return (x < (width / 3) ? 0 :
+			(x < ((width / 3) * 2) ? 1 :
+			2));
+	}
+	private int getRowFromYCoord(int y) {
+		return (y < (height / 3) ? 0 :
+			(y < ((height / 3) * 2) ? 1 : 2));
 	}
 
 	public void dispose() {
 		boardImg.dispose();
-		for (int i=0; i<5; i++) cross[i].dispose();
-		for (int i=0; i<4; i++) circle[i].dispose();
+		for (int i=0; i<5; i++)
+			if (cross[i] != null) 
+				cross[i].dispose();
+		for (int i=0; i<4; i++) 
+			if (circle[i] != null)
+				circle[i].dispose();
 	}
 }
 
@@ -218,12 +255,23 @@ public class TicTacToeGame extends ApplicationAdapter {
 		Gdx.gl.glClearColor(1, 0, 0, 1);
 		Gdx.gl.glClear(GL20.GL_COLOR_BUFFER_BIT);
 
+		// handle mouse click and resolve the result
+		if (Gdx.input.isButtonPressed(Input.Buttons.LEFT)) {
+			int x = Gdx.input.getX();
+			int y = Gdx.input.getY();
+
+			boardUI.resolveClick(x, y);
+		}
+
 		batch.begin();
 		boardUI.render(batch);
 		batch.end();
 
-		// handle mouse click and resolve the result
-
+		if (board.state() == Board.State.COMPLETE) {
+			// Temporary end-of-game response
+			System.out.println("GAME OVER: " + board.winner());
+			System.exit(-1);
+		}
 	}
 	
 	@Override
