@@ -167,9 +167,15 @@ class BoardUI {
 	private Sprite boardSprite;
 	private Texture cross[];
 	private Texture circle[];
+	private Sprite crossSprites[];
+	private Sprite circleSprites[];
 
 	public int width;
 	public int height;
+	// These are the respective X or Y values for the "edge" they
+	// represent; calculated once and cached
+	public int colXs[];
+	public int rowYs[];
 
 	public BoardUI(Board b) {
 		board = b;
@@ -182,21 +188,58 @@ class BoardUI {
 
 		// We need Textures for each spot on the board
 		cross = new Texture[5];
-		for (int i=0; i<5; i++)
-			cross[0] = new Texture("cross.png");
+		crossSprites = new Sprite[5];
+		for (int i=0; i<5; i++) {
+			cross[i] = new Texture("cross.png");
+			crossSprites[i] = new Sprite(cross[i]);
+		}
 		circle = new Texture[4];
-		for (int i=0; i<4; i++)
+		circleSprites = new Sprite[4];
+		for (int i=0; i<4; i++) {
 			circle[i] = new Texture("circle.png");
+			circleSprites[i] = new Sprite(circle[i]);
+		}
+
+		colXs = new int[3 + 1];
+		for (int i=0; i<3 + 1; i++)
+			colXs[i] = Math.round(width/3) * i;
+		rowYs = new int[3 + 1];
+		for (int i=0; i<3 + 1; i++)
+			rowYs[i] = Math.round(height/3) * i;
+
+		Gdx.app.log("UI", "Coords will be: ");
+		for (int x = 0; x < 3; x++) {
+			for (int y = 0; y < 3; y++) {
+				Gdx.app.log("UI", "Drawing [" + x + "," + y +  "] at " + colXs[x] + "x" + invert(rowYs[y+1]));
+			}
+		}
 	}
 
 	public void render(SpriteBatch batch) {
 		boardSprite.draw(batch);
 
-		// For each square in the board, draw the appropriate Texture
+		// For each square in the board, draw the appropriate Sprite
+		// NOTE: Screen coords are 0,0 from lower-left 
+		int crossCount = 0;
+		int circleCount = 0;
 		for (int x = 0; x < 3; x++) {
-
+			for (int y = 0; y < 3; y++) {
+				if (board.get(x,y) == 1) {
+					crossSprites[crossCount].setPosition(colXs[x], invert(rowYs[y+1]));
+					crossSprites[crossCount].draw(batch);
+					crossCount++;
+				}
+				else if (board.get(x,y) == 2) {
+					circleSprites[circleCount].setPosition(colXs[x], invert(rowYs[y+1]));
+					circleSprites[circleCount].draw(batch);
+					circleCount++;
+				}
+			}
 		}
 	}	
+	private int invert(int y) {
+		return Gdx.graphics.getHeight() - 1 - y;
+	}
 
 	public void resolveClick(int x, int y) {
 		int col = getColumnFromXCoord(x);
@@ -204,22 +247,29 @@ class BoardUI {
 
 		// Check if this is already taken
 		if (board.get(col, row) == 0) {
-			System.out.println("Player " + board.currentPlayer() 
-				+ " moves to " + col + " " + row);
-
 			board.play(col, row);
-
-			System.out.println(board.toString());
+			Gdx.app.log("UI", board.toString());
 		}
 	}
 	private int getColumnFromXCoord(int x) {
-		return (x < (width / 3) ? 0 :
-			(x < ((width / 3) * 2) ? 1 :
-			2));
+		// If we get to the last column, there's
+		// no comparison that needs to be made
+		for (int i=0; i<3 - 1; i++) {
+			if (x < colXs[i+1])
+				return i;
+		}
+
+		return 2;
 	}
 	private int getRowFromYCoord(int y) {
-		return (y < (height / 3) ? 0 :
-			(y < ((height / 3) * 2) ? 1 : 2));
+		// If we get to the last row, there's
+		// no comparison that needs to be made
+		for (int i=0; i<3 - 1; i++) {
+			if (y < rowYs[i+1])
+				return i;
+		}
+
+		return 2;
 	}
 
 	public void dispose() {
@@ -265,12 +315,13 @@ public class TicTacToeGame extends ApplicationAdapter {
 
 		batch.begin();
 		boardUI.render(batch);
+		camera.update();
 		batch.end();
 
 		if (board.state() == Board.State.COMPLETE) {
 			// Temporary end-of-game response
-			System.out.println("GAME OVER: " + board.winner());
-			System.exit(-1);
+			Gdx.app.log("TicTacToeGame", "GAME OVER: " + board.winner());
+			Gdx.app.exit();
 		}
 	}
 	
