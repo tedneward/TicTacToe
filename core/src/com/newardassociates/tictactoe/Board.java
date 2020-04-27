@@ -9,10 +9,15 @@ public class Board {
 	private int[][] board;
 	private int currentPlayer = 1; // start with X
 
-	// TODO: Refactor to use these to allow for easier
-	// variation in board size later
-	private final int numRows;
-	private final int numCols;
+	/**
+	 * The number of rows in the Board
+	 */
+	public final int numRows;
+
+	/**
+	 * The number of columns in the Board
+	 */
+	public final int numCols;
 
 	/**
 	 * Gives us an indication of what is currently going
@@ -50,6 +55,8 @@ public class Board {
 		board = new int[numCols][];
 		for (int i=0; i<numCols; i++)
 			board[i] = new int[numRows];
+
+		currentPlayer = 1; // X always goes first
 	}
 
 	/**
