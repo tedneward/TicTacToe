@@ -11,8 +11,8 @@ public class Board {
 
 	// TODO: Refactor to use these to allow for easier
 	// variation in board size later
-	private final int numRows = 3;
-	private final int numCols = 3;
+	private final int numRows;
+	private final int numCols;
 
 	/**
 	 * Gives us an indication of what is currently going
@@ -29,23 +29,34 @@ public class Board {
 	 * Construct a 3x3 game board
 	 */
 	public Board() {
-		reset(3);
+		this(3);
+	}
+
+	/**
+	 * Construct a Board of given size (square)
+	 * @param size
+	 */
+	public Board(int size) {
+		this.numRows = size;
+		this.numCols = size;
+
+		reset();
 	}
 
 	/**
 	 * Clear out a Board and start from scratch
 	 */
-	public void reset(int size) {
-		board = new int[size][];
-		for (int i=0; i<size; i++)
-			board[i] = new int[size];
+	public void reset() {
+		board = new int[numCols][];
+		for (int i=0; i<numCols; i++)
+			board[i] = new int[numRows];
 	}
 
 	/**
 	 * Return player number in that spot, or 0
 	 */
 	public int get(int x, int y) {
-		if (x < 0 || x > 2 || y < 0 || y > 2)
+		if (x < 0 || x > (numCols-1) || y < 0 || y > (numRows-1))
 			throw new IllegalArgumentException("Out of board range");
 
 			return board[x][y];
@@ -54,7 +65,7 @@ public class Board {
 	 * Set player number in that spot
 	 */
 	void set(int x, int y, int player) {
-		if (x < 0 || x > 2 || y < 0 || y > 2)
+		if (x < 0 || x > (numCols-1) || y < 0 || y > (numRows-1))
 			throw new IllegalArgumentException("Out of board range");
 
 		if (player < 1 || player > 2)
@@ -83,14 +94,14 @@ public class Board {
 	}
 
 	public int winner() {
-		// check for rows for each player
+		// check for each player
 		for (int p=1; p<=2; p++)
 		{
 			// check horizontal rows
-			for (int y = 0; y < 3; y++)
+			for (int y = 0; y < numRows; y++)
 			{
 				boolean complete = true;
-				for (int x = 0; x < 3; x++) {
+				for (int x = 0; x < numCols; x++) {
 					if (get(x, y) != p) {
 						complete = false;
 						break;
@@ -101,10 +112,10 @@ public class Board {
 			}
 
 			// check vertical
-			for (int x = 0; x < 3; x++)
+			for (int x = 0; x < numCols; x++)
 			{
 				boolean complete = true;
-				for (int y = 0; y < 3; y++) {
+				for (int y = 0; y < numRows; y++) {
 					if (get(x, y) != p) {
 						complete = false;
 						break;
@@ -117,7 +128,7 @@ public class Board {
 			// check diagonals
 			{
 				boolean complete = true;
-				for (int d=0; d < 3; d++) {
+				for (int d=0; d < numRows; d++) {
 					if (get(d, d) != p) {
 						complete = false;
 						break;
@@ -127,8 +138,8 @@ public class Board {
 					return p;
 
 				complete = true;
-				for (int d=0; d < 3; d++) {
-					if (get(d, (2 - d)) != p) {
+				for (int d=0; d < numRows; d++) {
+					if (get(d, (numRows-1 - d)) != p) {
 						complete = false;
 						break;
 					}
