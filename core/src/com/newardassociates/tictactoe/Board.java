@@ -165,8 +165,9 @@ public class Board {
 
 	@Override
 	public String toString() {
+		// Offset is to assume "GameScreen" is the tag in the log in front of it
 		return "BOARD: [ [" + get(0,0) + "]  [" + get(1, 0) + "]  [" + get(2, 0) + "]\n" +
-			"         [" + get(0,1) + "]  [" + get(1, 1) + "]  [" + get(2, 1) + "]\n" +
-			"         [" + get(0,2) + "]  [" + get(1, 2) + "]  [" + get(2, 2) + "]  ]";
+			"                      [" + get(0,1) + "]  [" + get(1, 1) + "]  [" + get(2, 1) + "]\n" +
+			"                      [" + get(0,2) + "]  [" + get(1, 2) + "]  [" + get(2, 2) + "]  ]";
 	} 
 }

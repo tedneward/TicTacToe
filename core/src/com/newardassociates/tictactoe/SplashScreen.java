@@ -17,6 +17,7 @@ import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 public class SplashScreen extends ScreenAdapter{
     private Game game;
     private float pauseTime = 0.0f;
+    private static final float PAUSE = 2.0f; // 5.0f;
     private SpriteBatch batch;
     private Texture logo;
     private Sprite logoSprite;
@@ -49,8 +50,6 @@ public class SplashScreen extends ScreenAdapter{
 
     @Override
     public void render(float delta) {
-        Gdx.app.log(TAG, "pauseTime = " + pauseTime);
-
         Gdx.gl.glClearColor(Color.RED.r, Color.RED.g, Color.RED.b, Color.RED.a);
         Gdx.gl.glClear(GL20.GL_COLOR_BUFFER_BIT);
 
@@ -59,7 +58,7 @@ public class SplashScreen extends ScreenAdapter{
         batch.end();
 
         pauseTime += delta;
-        if (pauseTime > 5.0f) {
+        if (pauseTime > PAUSE) {
             game.setScreen(new GameScreen(game));
         }
     }
