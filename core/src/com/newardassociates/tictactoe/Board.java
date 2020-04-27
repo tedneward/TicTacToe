@@ -152,8 +152,8 @@ public class Board {
 		// check if all squares are filled; all squares filled
 		// and no winner (checked above) means we have a draw
 		boolean filled = true;
-		for (int x=0; x<3; x++)
-			for (int y=0; y<3; y++)
+		for (int x=0; x<numCols; x++)
+			for (int y=0; y<numRows; y++)
 				if (get(x,y) == 0)
 					filled = false;
 		if (filled)
