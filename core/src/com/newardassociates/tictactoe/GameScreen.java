@@ -12,7 +12,7 @@ import com.badlogic.gdx.graphics.g2d.BitmapFont;
 import com.badlogic.gdx.graphics.g2d.GlyphLayout;
 import com.badlogic.gdx.graphics.g2d.Sprite;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
-import com.badlogic.gdx.utils.viewport.ScreenViewport;
+import com.badlogic.gdx.utils.viewport.FitViewport;
 import com.badlogic.gdx.utils.viewport.Viewport;
 
 import static com.badlogic.gdx.graphics.Color.*;
@@ -28,7 +28,9 @@ public class GameScreen extends ScreenAdapter {
 	private Sprite circleSprites[];
 	private BitmapFont bitmapFont;
 	private SpriteBatch batch;
+
 	private OrthographicCamera camera;
+	private Viewport viewport;
 
 	private int width;
 	private int height;
@@ -73,7 +75,10 @@ public class GameScreen extends ScreenAdapter {
 		board = new Board();
 
 		camera = new OrthographicCamera();
-		camera.setToOrtho(false, width, height);
+		camera.position.set(320, 240, 0);
+		camera.update();
+
+		viewport = new FitViewport(640, 480, camera);
 
 		bitmapFont = new BitmapFont();
 
@@ -157,7 +162,8 @@ public class GameScreen extends ScreenAdapter {
 		// so we can capture width and height here
 		this.width = width;
 		this.height = height;
-		camera.setToOrtho(false, width, height);
+		viewport.update(width, height);
+		camera.setToOrtho(false, width, height);  // ??? necessary ???
 		boardSprite.setSize(width, height);
 
 		// Resize the cell locations
@@ -262,7 +268,7 @@ public class GameScreen extends ScreenAdapter {
 		boardImg.dispose();
 		bitmapFont.dispose();
 		for (int i=0; i<cross.length; i++)
-			if (cross[i] != null) 
+			if (cross[i] != null)
 				cross[i].dispose();
 		for (int i=0; i<circle.length; i++) 
 			if (circle[i] != null)
