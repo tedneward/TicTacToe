@@ -23,6 +23,6 @@ public class TicTacToeGame extends Game {
 		Gdx.app.log(TAG, "JavaHeap: " + Gdx.app.getJavaHeap());
 		Gdx.app.log(TAG, "NativeHeap: " + Gdx.app.getNativeHeap());
 
-		setScreen(new MainMenuScreen(this)); //new SplashScreen(this));
+		setScreen(new SplashScreen(this));
 	}
 }
