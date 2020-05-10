@@ -14,9 +14,10 @@ import com.badlogic.gdx.graphics.g2d.Sprite
 import com.badlogic.gdx.graphics.g2d.SpriteBatch
 import com.badlogic.gdx.utils.viewport.FitViewport
 import com.badlogic.gdx.utils.viewport.Viewport
+import kotlin.math.roundToInt
 
 class GameScreen(private val game: Game) : ScreenAdapter() {
-    private var board: Board? = Board()
+    private var board = Board()
     private var boardImg: Texture? = null
     private var boardSprite: Sprite? = null
     private var cross: Array<Texture?> = arrayOf()
@@ -32,8 +33,8 @@ class GameScreen(private val game: Game) : ScreenAdapter() {
 
     // These are the respective X or Y values for the "edge" they
     // represent; calculated once and cached
-    private var colXs: IntArray = IntArray(board!!.numCols + 1)
-    private var rowYs: IntArray = IntArray(board!!.numRows + 1)
+    private var colXs: IntArray = IntArray(board.numCols + 1)
+    private var rowYs: IntArray = IntArray(board.numRows + 1)
     private var gameOverTime = 0.0f
 
     /**
@@ -49,6 +50,7 @@ class GameScreen(private val game: Game) : ScreenAdapter() {
         // wanting to start a new game, we need to move this construction
         // to the GameScreen constructor, and not here. Otherwise, board
         // state is implicitly reset every time we move between screens.
+        board = Board()
         camera = OrthographicCamera()
         camera!!.position[320f, 240f] = 0f
         camera!!.update()
@@ -62,7 +64,7 @@ class GameScreen(private val game: Game) : ScreenAdapter() {
         // 2 players, 4x4 board = 16 cells
         // 2 players, 5x5 board = 25 cells
         // and so on
-        val numP1Cells = board!!.numRows * board!!.numCols / 2 + 1
+        val numP1Cells = board.numRows * board.numCols / 2 + 1
 
         // The +1 here is to account for odd numbers of total cells;
         // in an even-numbered side, it means one extra cell will be
@@ -74,7 +76,7 @@ class GameScreen(private val game: Game) : ScreenAdapter() {
             cross[i] = Texture(Gdx.files.internal("cross.png"))
             crossSprites[i] = Sprite(cross[i])
         }
-        val numP2Cells = board!!.numRows * board!!.numCols / 2
+        val numP2Cells = board.numRows * board.numCols / 2
         circle = arrayOfNulls(numP2Cells)
         circleSprites = arrayOfNulls(numP2Cells)
         for (i in 0 until numP2Cells) {
@@ -83,13 +85,13 @@ class GameScreen(private val game: Game) : ScreenAdapter() {
         }
     }
 
-    fun resolveClick(x: Int, y: Int) {
+    private fun resolveClick(x: Int, y: Int) {
         val col = getColumnFromXCoord(x)
         val row = getRowFromYCoord(y)
 
         // Check if this is already taken
-        if (board!![col, row] == 0) {
-            board!!.play(col, row)
+        if (board[col, row] == 0) {
+            board.play(col, row)
             Gdx.app.log(TAG, board.toString())
         }
     }
@@ -97,19 +99,19 @@ class GameScreen(private val game: Game) : ScreenAdapter() {
     private fun getColumnFromXCoord(x: Int): Int {
         // If we get to the last column, there's
         // no comparison that needs to be made
-        for (i in 0 until 3 - 1) {
+        for (i in 0 until board.numCols - 1) {
             if (x < colXs[i + 1]) return i
         }
-        return 2
+        return board.numCols - 1
     }
 
     private fun getRowFromYCoord(y: Int): Int {
         // If we get to the last row, there's
         // no comparison that needs to be made
-        for (i in 0 until 3 - 1) {
+        for (i in 0 until board.numRows - 1) {
             if (y < rowYs[i + 1]) return i
         }
-        return 2
+        return board.numRows - 1
     }
 
     override fun pause() {
@@ -136,10 +138,12 @@ class GameScreen(private val game: Game) : ScreenAdapter() {
         boardSprite!!.setSize(width.toFloat(), height.toFloat())
 
         // Resize the cell locations
-        colXs = IntArray(board!!.numCols + 1)
-        for (i in 0 until board!!.numCols + 1) colXs[i] = Math.round(width / board!!.numCols.toFloat()) * i
-        rowYs = IntArray(board!!.numRows + 1)
-        for (i in 0 until board!!.numRows + 1) rowYs[i] = Math.round(height / board!!.numRows.toFloat()) * i
+        colXs = IntArray(board.numCols + 1)
+        for (i in 0 until board.numCols + 1) {
+            colXs[i] = (width / board.numCols.toFloat()).roundToInt() * i
+        }
+        rowYs = IntArray(board.numRows + 1)
+        for (i in 0 until board.numRows + 1) rowYs[i] = Math.round(height / board.numRows.toFloat()) * i
     }
 
     /**
@@ -152,7 +156,7 @@ class GameScreen(private val game: Game) : ScreenAdapter() {
         batch!!.begin()
         boardSprite!!.draw(batch)
         renderBoard(batch)
-        if (board!!.state() == Board.State.COMPLETE) {
+        if (board.state() == Board.State.COMPLETE) {
             renderGameOver(batch)
 
             // Pause for two seconds, then look for touch or click input
@@ -160,7 +164,7 @@ class GameScreen(private val game: Game) : ScreenAdapter() {
             Gdx.app.log(TAG, "gameOverTime = $gameOverTime")
             if (gameOverTime > GAME_OVER_DISPLAY_TIME) {
                 gameOverTime = 0.0f
-                board!!.reset()
+                board.reset()
             }
         } else {
             // handle mouse click and resolve the result
@@ -176,15 +180,15 @@ class GameScreen(private val game: Game) : ScreenAdapter() {
         // NOTE: Screen coords are 0,0 from lower-left
         var crossCount = 0
         var circleCount = 0
-        for (x in 0 until board!!.numCols) {
-            for (y in 0 until board!!.numRows) {
+        for (x in 0 until board.numCols) {
+            for (y in 0 until board.numRows) {
                 // in libgdx, drawing coordinates begin in the lower-left corner
                 val yInverted = Gdx.graphics.height - 1 - rowYs[y + 1]
-                if (board!![x, y] == 1) {
+                if (board[x, y] == 1) {
                     crossSprites[crossCount]!!.setPosition(colXs[x].toFloat(), yInverted.toFloat())
                     crossSprites[crossCount]!!.draw(batch)
                     crossCount++
-                } else if (board!![x, y] == 2) {
+                } else if (board[x, y] == 2) {
                     circleSprites[circleCount]!!.setPosition(colXs[x].toFloat(), yInverted.toFloat())
                     circleSprites[circleCount]!!.draw(batch)
                     circleCount++
@@ -195,13 +199,13 @@ class GameScreen(private val game: Game) : ScreenAdapter() {
 
     private fun renderGameOver(batch: SpriteBatch?) {
         var text = "GAME OVER -- "
-        when (board!!.winner()) {
+        when (board.winner()) {
             -1 -> text = "$text DRAW"
             1 -> text = "$text PLAYER 1 WINS!"
             2 -> text = "$text PLAYER 2 WINS!"
         }
         val layout = GlyphLayout(bitmapFont, text)
-        if (board!!.winner() == -1) {
+        if (board.winner() == -1) {
             bitmapFont!!.color = Color.BROWN
         } else {
             bitmapFont!!.color = Color.GREEN
