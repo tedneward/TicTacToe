@@ -16,7 +16,7 @@ import com.badlogic.gdx.utils.viewport.FitViewport
 import com.badlogic.gdx.utils.viewport.Viewport
 
 class GameScreen(private val game: Game) : ScreenAdapter() {
-    private var board: Board? = null
+    private var board: Board? = Board()
     private var boardImg: Texture? = null
     private var boardSprite: Sprite? = null
     private var cross: Array<Texture?> = arrayOf()
@@ -49,7 +49,6 @@ class GameScreen(private val game: Game) : ScreenAdapter() {
         // wanting to start a new game, we need to move this construction
         // to the GameScreen constructor, and not here. Otherwise, board
         // state is implicitly reset every time we move between screens.
-        board = Board()
         camera = OrthographicCamera()
         camera!!.position[320f, 240f] = 0f
         camera!!.update()
