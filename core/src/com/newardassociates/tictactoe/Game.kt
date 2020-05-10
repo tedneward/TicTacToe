@@ -1,9 +1,6 @@
 package com.newardassociates.tictactoe
 
-import com.badlogic.gdx.Game
-import com.badlogic.gdx.Gdx
-import com.badlogic.gdx.Input
-import com.badlogic.gdx.ScreenAdapter
+import com.badlogic.gdx.*
 import com.badlogic.gdx.graphics.Color
 import com.badlogic.gdx.graphics.GL20
 import com.badlogic.gdx.graphics.OrthographicCamera
@@ -16,7 +13,7 @@ import com.badlogic.gdx.utils.viewport.FitViewport
 import com.badlogic.gdx.utils.viewport.Viewport
 import kotlin.math.roundToInt
 
-class GameScreen(private val game: Game) : ScreenAdapter() {
+class GameScreen(private val game: Game) : Screen {
     private var board = Board()
     private var boardImg: Texture? = null
     private var boardSprite: Sprite? = null
@@ -143,7 +140,9 @@ class GameScreen(private val game: Game) : ScreenAdapter() {
             colXs[i] = (width / board.numCols.toFloat()).roundToInt() * i
         }
         rowYs = IntArray(board.numRows + 1)
-        for (i in 0 until board.numRows + 1) rowYs[i] = Math.round(height / board.numRows.toFloat()) * i
+        for (i in 0 until board.numRows + 1) {
+            rowYs[i] = (height / board.numRows.toFloat()).roundToInt() * i
+        }
     }
 
     /**

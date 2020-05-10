@@ -10,7 +10,7 @@ Main menu scene
 
 Credits scene (vertical crawl of text)
 
-Convert the Java code over to Kotlin (optional)
+Convert the Java code over to Kotlin (optional) -- done!
 
 Try building/running it on Android -- done!
 
@@ -18,6 +18,6 @@ Try building/running it on iOS -- done! (Though I need to create a provisioning 
 
 Try building/running it for web
 
-Varying board sizes (which will require drawing the board from scratch or something, as well as calculating the click/touch areas dynamically based on the number of squares)
+Varying board sizes (which will require drawing the board from scratch)
 
 Provide an AI?
